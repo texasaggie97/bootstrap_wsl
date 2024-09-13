@@ -54,15 +54,14 @@ Remove-Item -r .\staging\$wslName\
 Write-Output "Updating Debian"
 wsl -d $wslName -u root bash -ic "apt update"
 
-#Write-Output "Adding $username"
-#wsl -d $wslName -u root bash -ic "./scripts/config/system/createUser.sh $username ubuntu"
+$wslCurrentPath = wsl wslpath ($PSScriptRoot -replace "\\","/")
 
 Write-Output "Installing ansible"
 wsl -d $wslName -u root bash -ic 'apt install ansible -y'
 
-wsl -d $wslName -u root bash -ic  'ansible-playbook /mnt/c/dev/GH/bootstrap_wsl/ansible/playbook1.yml'
+wsl -d $wslName -u root bash -ic "ansible-playbook $wslCurrentPath/ansible/playbook1.yml"
 
 wsl -t $wslName
 
-wsl -d $wslName -u root bash -ic  'ansible-playbook /mnt/c/dev/GH/bootstrap_wsl/ansible/playbook2.yml'
+wsl -d $wslName -u root bash -ic "ansible-playbook $wslCurrentPath/ansible/playbook2.yml"
 
