@@ -1,0 +1,101 @@
+---
+- name: Update wsl machines
+  hosts: localhost
+  connection: local
+  become: yes
+  become_user: root
+  vars:
+    github_user: texasaggie97
+    git_email: "mark.silva@ni.com"
+    username: mark
+    full_name: "Mark Silva"
+    all_groups:
+      - root
+      - adm
+      - dialout
+      - cdrom
+      - sudo
+      - audio
+      - video
+      - plugdev
+      - games
+      - users
+      - input
+      - render
+      - netdev
+
+  tasks:
+    - name: Enable systemd
+      community.general.ini_file:
+        path: /etc/wsl.conf
+        section: boot
+        option: systemd
+        value: True
+        state: present
+
+    - name: Set automount option enabled
+      community.general.ini_file:
+        path: /etc/wsl.conf
+        section: automount
+        option: enabled
+        value: True
+        state: present
+    
+    - name: Set automount option root
+      community.general.ini_file:
+        path: /etc/wsl.conf
+        section: automount
+        option: root
+        value: /mnt
+        state: present
+    
+    - name: Set automount option options
+      community.general.ini_file:
+        path: /etc/wsl.conf
+        section: automount
+        option: options
+        value: "metadata,umask=22,fmask=11"
+        state: present
+    
+    - name: Set automount option mountFsTab
+      community.general.ini_file:
+        path: /etc/wsl.conf
+        section: automount
+        option: mountFsTab
+        value: False
+        state: present
+    
+    - name: Set interop options
+      community.general.ini_file:
+        path: /etc/wsl.conf
+        section: interop
+        option: appendWindowsPath
+        value: False
+        state: present
+
+    - name: Update and upgrade
+      apt:
+        upgrade: True
+        update_cache: True
+
+    - name: "Add/ensure {{ username }} ({{ full_name }})"
+      ansible.builtin.user:
+        name: "{{ username }}"
+        comment: "{{ full_name }}"
+        group: users
+        groups: "{{ all_groups }}"
+
+    - name: "Set authorized key taken from file"
+      ansible.posix.authorized_key:
+        user: "{{ username }}"
+        state: present
+        key: "{{ lookup('url', 'https://github.com/{{ github_user }}.keys', split_lines=False) }}"
+
+    - name: Set default user
+      community.general.ini_file:
+        path: /etc/wsl.conf
+        section: user
+        option: default
+        value: "{{ username }}"
+        state: present
+

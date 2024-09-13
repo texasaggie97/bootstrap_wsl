@@ -1,0 +1,120 @@
+---
+- name: Update wsl machines
+  hosts: localhost
+  connection: local
+  become: yes
+  become_user: root
+  vars:
+    github_user: texasaggie97
+    git_email: "mark.silva@ni.com"
+    username: mark
+    full_name: "Mark Silva"
+    all_groups:
+      - root
+      - adm
+      - dialout
+      - cdrom
+      - sudo
+      - audio
+      - video
+      - plugdev
+      - games
+      - users
+      - input
+      - render
+      - netdev
+
+  tasks:
+    - name: Install aptitude
+      apt:
+        name: aptitude
+        state: latest
+
+    - name: Install htop & atop
+      apt:
+        name:
+          - htop
+          - atop
+        state: latest
+
+    - name: Install git
+      apt:
+        name: git
+        state: latest
+
+    - name: Install git
+      apt:
+        name: tzdata
+        state: latest
+
+    - name: Set timezone to New York
+      community.general.timezone:
+        name: America/New_York
+
+    - name: Enable color grep
+      lineinfile:
+        path: /home/{{ username }}/.bashrc
+        regexp: '(\s*)#alias grep=(.*)'
+        line: '\1alias grep=\2'
+        backrefs: True
+        state: present
+
+    - name: Enable color egrep
+      lineinfile:
+        path: /home/{{ username }}/.bashrc
+        regexp: '(\s*)#alias egrep=(.*)'
+        line: '\1alias egrep=\2'
+        backrefs: True
+        state: present
+                    
+    - name: Enable color fgrep
+      lineinfile:
+        path: /home/{{ username }}/.bashrc
+        regexp: '(\s*)#alias fgrep=(.*)'
+        line: '\1alias fgrep=\2'
+        backrefs: True
+        state: present
+
+    - name: Enable ll
+      lineinfile:
+        path: /home/{{ username }}/.bashrc
+        regexp: '(\s*)#alias ll=(.*)'
+        line: '\1alias ll=\2'
+        backrefs: True
+        state: present
+                    
+    - name: Enable la
+      lineinfile:
+        path: /home/{{ username }}/.bashrc
+        regexp: '(\s*)#alias la=(.*)'
+        line: '\1alias la=\2'
+        backrefs: True
+        state: present
+                    
+    - name: Enable lla
+      lineinfile:
+        path: /home/{{ username }}/.bashrc
+        regexp: 'alias lla='
+        line: 'alias lla="ls -la"'
+        insertafter: 'alias la='
+        state: present
+                    
+    - name: Enable color GCC
+      lineinfile:
+        path: /home/{{ username }}/.bashrc
+        regexp: '#export GCC_COLORS=(.*)'
+        line: 'export GCC_COLORS=\1'
+        backrefs: True
+        state: present
+
+    - name: Set git user
+      git_config:
+        name: user.name
+        scope: global
+        value: "{{ full_name }}"
+
+    - name: Set git email address
+      git_config:
+        name: user.email
+        scope: global
+        value: "{{ git_email }}"
