@@ -34,7 +34,7 @@ curl.exe -L -o .\staging\Debian.appx https://aka.ms/wsl-debian-gnulinux
 Write-Output "Installing Debian"
 Move-Item .\staging\Debian.appx .\staging\$wslName.zip
 Expand-Archive .\staging\$wslName.zip .\staging\$wslName
-Move-Item .\staging\$wslName\DistroLauncher-Appx_1.12.2.0_x64.appx .\staging\$wslName\x64.zip
+Move-Item .\staging\$wslName\DistroLauncher-*_x64.appx .\staging\$wslName\x64.zip
 Expand-Archive .\staging\$wslName\x64.zip .\staging\$wslName\x64
 
 
@@ -60,9 +60,9 @@ wsl -d $wslName -u root bash -ic "apt update"
 Write-Output "Installing ansible"
 wsl -d $wslName -u root bash -ic 'apt install ansible -y'
 
-wsl -d $wslName -u root bash -ic  'ansible-playbook /mnt/c/dev/GH/bootstrap_wsl2/ansible/playbook1.yml'
+wsl -d $wslName -u root bash -ic  'ansible-playbook /mnt/c/dev/GH/bootstrap_wsl/ansible/playbook1.yml'
 
 wsl -t $wslName
 
-wsl -d $wslName -u root bash -ic  'ansible-playbook /mnt/c/dev/GH/bootstrap_wsl2/ansible/playbook2.yml'
+wsl -d $wslName -u root bash -ic  'ansible-playbook /mnt/c/dev/GH/bootstrap_wsl/ansible/playbook2.yml'
 
